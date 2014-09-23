@@ -1,0 +1,129 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>DK Toolkit Index</title>
+	<style>
+	.box{
+		width:50px;height:50px; display:inline-block;margin-right:10px;border-radius:25px;cursor:pointer;
+		-webkit-transition-duration:.15s;
+		z-index:10;
+		position:absolute;
+	}
+	.box:hover{
+		-webkit-transform:scale3d(1.2,1.2,1.2);
+	}
+	.emptybox{
+		border:2px solid #ccc;
+		border-radius:30px;
+		width:50px;
+		height:50px;
+		position:absolute;
+		-webkit-transition-duration:.15s;
+	}
+	.emptybox:hover{
+		-webkit-transform:scale3d(1.2,1.2,1.2);
+	}
+	.emptybox.pep-dpa{
+		background:#fef1d2;
+		
+	}
+	</style>
+</head>
+<body>
+<script src="dk_tools.js"></script>
+<script src="oo.js"></script>
+<script src="jquery-1.11.1.min.js"></script>
+<script src="jquery.pep.js"></script>
+<script>
+function getRgb(value){
+	var rexColor_FF_each = /\d{1,3}/g;
+	var colorDataArr = colorString.match(rexColor_FF_each);
+	colorData.r = parseInt(colorDataArr[0]);
+	colorData.g = parseInt(colorDataArr[1]);
+	colorData.b = parseInt(colorDataArr[2]);
+	return colorData;
+}
+
+function getRgbStyle(rgb){
+	return 'rgb(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ')';
+}
+
+function genRandColor(){
+	return {
+		r: dk.rand(0, 255),
+		g: dk.rand(0, 255),
+		b: dk.rand(0, 255)
+	};
+}
+
+function getAverage(s, e, step){
+	return parseInt((e - s) / (step + 1));
+}
+var colorBegin = genRandColor();
+var colorEnd = genRandColor();
+var step = 1;
+var begin = dk.$c('div', null, 'box');
+var end = dk.$c('div', null, 'box');
+$(begin).css({
+	background: getRgbStyle(colorBegin),
+	top:10,
+	left:10
+});
+$(end).css({
+	background: getRgbStyle(colorEnd),
+	top: 10,
+	left: (step + 1) * 60 + 10
+});
+//begin.innerHTML = getRgbStyle(colorBegin);
+//end.innerHTML = getRgbStyle(colorEnd);
+
+document.body.appendChild(begin);
+
+for(var i = 0; i < step; i++){
+	var ele = dk.$c('div', null, 'box');
+	var data = {
+		r: getAverage(colorBegin.r, colorEnd.r, step) * (i + 1) + colorBegin.r,
+		g: getAverage(colorBegin.g, colorEnd.g, step) * (i + 1) + colorBegin.g,
+		b: getAverage(colorBegin.b, colorEnd.b, step) * (i + 1) + colorBegin.b,
+	};
+	
+	//ele.innerHTML = getRgbStyle(data);
+	document.body.appendChild(ele);
+	$(ele).css({
+		background: getRgbStyle(data),
+		left: (i + 1) * 60  + 10,
+		top: 10
+	});
+}
+document.body.appendChild(end);
+$('.box').pep({
+  droppable:   '.emptybox',
+  drag: function(ev, obj){
+    console.log('There are ' + this.activeDropRegions.length + 'active drop regions.')
+  },
+  stop: function(ev, obj){
+	console.log(obj);
+	if(this.activeDropRegions.length > 0){
+		console.log(this.activeDropRegions[0].css('left'), this.activeDropRegions[0].css('top'));
+		this.$el.animate({
+			left: 130,
+			top: 100
+		}, 1000);
+	}
+  },
+  shouldEase: false
+});
+
+
+for(var i = 0; i < step + 2; i++){
+	var ele = dk.$c('div', null, 'emptybox');
+	document.body.appendChild(ele);
+	$(ele).css({
+		left: i * 60  + 10,
+		top: 100
+	});
+}
+</script>
+</body>
+</html>
